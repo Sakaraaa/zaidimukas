@@ -262,17 +262,18 @@ function renderTable() {
                 const delta = oldTop - newTop;
                 if (delta) {
                     row.style.transform = `translateY(${delta}px)`;
-                    row.classList.add('smooth-move');
+                   row.classList.add('smooth-move');
                     requestAnimationFrame(() => {
                         row.style.transform = '';
                     });
                     row.addEventListener('transitionend', () => {
                         row.classList.remove('smooth-move');
                     }, { once: true });
-         
-        
- 
 
+                }
+            }
+        });
+    });
     // Atvaizduojame aktyvių booster'ių žymes
     sortedPlayers.forEach(player => {
         renderBoosterList(player.id);
@@ -1316,4 +1317,3 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
-
