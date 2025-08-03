@@ -262,7 +262,9 @@ function renderTable() {
                 const delta = oldTop - newTop;
                 if (delta) {
                     row.style.transform = `translateY(${delta}px)`;
-                   row.classList.add('smooth-move');
+                    row.classList.add('smooth-move');
+                    // Read layout to flush style changes before starting transition
+                    row.getBoundingClientRect();
                     requestAnimationFrame(() => {
                         row.style.transform = '';
                     });
@@ -1317,5 +1319,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
 
 
