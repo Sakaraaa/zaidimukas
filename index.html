@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+    <meta charset="UTF-8">
+    <title>Žaidimo taškų sekimo sistema</title>
+    
+</head>
+<body>
+<h1>Žaidimo taškų sekimo sistema</h1>
+
+<!-- Nuoroda į Loot box skiltį toje pačioje byloje. Spaudžiant – parodomas lootbox skyrius -->
+<p id="lootLink"><strong><a href="#" onclick="showLootBox(); return false;">🎁 Loot box</a></strong> – random boosteris už 5 taškus</p>
+<p id="marketLink"><strong><a href="#" onclick="showMarketplace(); return false;">🛒 Marketplace</a></strong> – įsigykite boosterį už taškus</p>
+    <!-- Nuoroda į lyderių lentelę ir progresijų grafikus -->
+    <p id="leaderLink"><strong><a href="#" onclick="showLeaderboard(); return false;">🏆 Lyderiai</a></strong> – savaitės/mėnesio lyderių lentelė</p>
+    <p id="chartLink"><strong><a href="#" onclick="showCharts(); return false;">📈 Grafikai</a></strong> – žaidėjų taškų kaita laike</p>
+
+<!-- Jungiklis rodyti / slėpti naujo boosterio stulpelį -->
+<div id="toggleBoosterContainer" style="display:inline-flex; align-items:center; gap:4px; margin:5px 0 15px 0;">
+    <input type="checkbox" id="toggleBoosterColumn" onchange="toggleBoosterColumnVisibility()">
+    <label for="toggleBoosterColumn">Rodyti "Naujas boosteris" stulpelį</label>
+</div>
+
+<button id="resetButton" type="button" style="margin-bottom:15px;">Nulinti taškus</button>
+<button id="fullResetButton" style="margin-left:8px;background:#ff6666;">Išvalyti VISKĄ</button>
+
+    <table id="scoreboard">
+        <thead>
+        <!-- Pirmoje eilėje nurodome bendras sekcijas. "Veiklos" dengia 7 stulpelius,
+             "Aktyvūs boosteriai" ir "Partneris" yra prieš "Naujas boosteris", kurį galima slėpti -->
+        <tr>
+            <th rowspan="2">Žaidėjas</th>
+            <th rowspan="2">Taškai</th>
+            <th rowspan="2">Pasiekimai</th>
+            <th colspan="7">Veiklos</th>
+            <th rowspan="2">Aktyvūs boosteriai</th>
+            <th rowspan="2">Partneris</th>
+            <th rowspan="2" class="new-booster-column">Naujas boosteris</th>
+        </tr>
+        <!-- Antroje eilėje atvaizduojame atskiras veiklas -->
+        <tr>
+            <th class="small">Upsell (+1)</th>
+            <th class="small">New Sale (+2)</th>
+            <th class="small">Equipment (+4)</th>
+            <th class="small">AHT (+2)</th>
+            <th class="small">Wrap-up (+4)</th>
+            <th class="small">GSR mobilus (+4)</th>
+            <th class="small">GSR fix (+5)</th>
+        </tr>
+        </thead>
+    <tbody id="playersBody"></tbody>
+</table>
+
+<!-- Loot box sekcija (paslėpta pagal nutylėjimą) -->
+<div id="lootBoxSection" style="display:none; margin-top: 30px; max-width: 800px; margin-left:auto; margin-right:auto;">
+    <h2>Loot box</h2>
+    <!-- Grįžimo nuorodą rodome viršuje šalia pavadinimo, kad būtų patogiau sugrįžti -->
+    <p style="margin: 0 0 10px 0;"><a href="#" onclick="hideLootBox(); return false;">← Grįžti į taškų sekimo sistemą</a></p>
+    <p>Šiame puslapyje galite atsitiktinai išsitraukti vieną iš žaidimo booster'ių. Kiekvienas traukimas kainuoja 5 taškus. Pasirinkite žaidėją ir spauskite mygtuką, kad sumažintumėte jo taškus ir gautumėte boosterį.</p>
+    <div style="margin-bottom: 10px;">
+        <label for="lootPlayerSelect">Žaidėjas:</label>
+        <select id="lootPlayerSelect"></select>
+        <button id="lootDrawButton">Traukti boosterį (−5 taškai)</button>
+    </div>
+    <div id="lootResult" style="margin-top:10px;font-weight:bold;"></div>
+    <h3>Booster'ių ištraukimo tikimybės</h3>
+    <table>
+        <thead>
+        <tr>
+            <th>Boosteris</th>
+            <th>Kiekis</th>
+            <th>Šansas</th>
+            <th>Rūšis</th>
+        </tr>
+        </thead>
+        <tbody id="lootProbTable"></tbody>
+    </table>
+    <!-- Apatinės grįžimo nuorodos nebereikia, nes ją rodome viršuje -->
+</div>
+
+<!-- Marketplace skiltis (paslėpta pagal nutylėjimą) -->
+<div id="marketplaceSection" style="display:none; margin-top: 30px; max-width: 800px; margin-left:auto; margin-right:auto;">
+    <h2>Marketplace</h2>
+    <!-- Grįžimo nuoroda į viršų, kad būtų patogu sugrįžti -->
+    <p style="margin: 0 0 10px 0;"><a href="#" onclick="hideMarketplace(); return false;">← Grįžti į taškų sekimo sistemą</a></p>
+    <p>Šiame kambaryje galite už fiksuotą taškų sumą nusipirkti tam tikrą boosterį. Pasirinkite žaidėją ir spauskite mygtuką prie norimo boosterio.</p>
+    <div style="margin-bottom: 10px;">
+        <label for="marketPlayerSelect">Žaidėjas:</label>
+        <select id="marketPlayerSelect"></select>
+    </div>
+    <table>
+        <thead>
+        <tr>
+            <th>Boosteris</th>
+            <th>Kaina</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Surikiuota pagal kainą nuo didžiausios iki mažiausios -->
+        <tr class="market-item" data-type="1dAll" data-cost="15">
+            <td>1d. Viskam ×2</td><td>15</td><td><button class="buyBtn" data-type="1dAll" data-cost="15">Pirkti</button></td>
+        </tr>
+        <tr class="market-item" data-type="3dNewSale" data-cost="10">
+            <td>3d. New Sale ×2</td><td>10</td><td><button class="buyBtn" data-type="3dNewSale" data-cost="10">Pirkti</button></td>
+        </tr>
+        <tr class="market-item" data-type="3dUpsell" data-cost="10">
+            <td>3d. Upsell ×2</td><td>10</td><td><button class="buyBtn" data-type="3dUpsell" data-cost="10">Pirkti</button></td>
+        </tr>
+        <tr class="market-item" data-type="3dEquipment" data-cost="10">
+            <td>3d. Equipment ×2</td><td>10</td><td><button class="buyBtn" data-type="3dEquipment" data-cost="10">Pirkti</button></td>
+        </tr>
+        <tr class="market-item" data-type="randomPartner" data-cost="7">
+            <td>Random draugas</td><td>7</td><td><button class="buyBtn" data-type="randomPartner" data-cost="7">Pirkti</button></td>
+        </tr>
+        </tbody>
+    </table>
+    <div id="marketResult" style="margin-top:10px;font-weight:bold;"></div>
+</div>
+
+<!-- Lyderių skiltis (paslėpta) -->
+<div id="leaderboardSection" style="display:none; margin-top:30px; max-width:800px; margin-left:auto; margin-right:auto;">
+    <h2>Lyderių lentelė</h2>
+    <p><a href="#" onclick="hideLeaderboard(); return false;">← Grįžti į taškų sekimo sistemą</a></p>
+    <p>Čia rodomi geriausi žaidėjai per paskutinę savaitę ir mėnesį pagal surinktų taškų kiekį.</p>
+    <h3>Savaitės lyderiai</h3>
+    <table>
+        <thead><tr><th>Vieta</th><th>Žaidėjas</th><th>Surinkta taškų</th></tr></thead>
+        <tbody id="leaderboardWeek"></tbody>
+    </table>
+    <h3>Mėnesio lyderiai</h3>
+    <table>
+        <thead><tr><th>Vieta</th><th>Žaidėjas</th><th>Surinkta taškų</th></tr></thead>
+        <tbody id="leaderboardMonth"></tbody>
+    </table>
+</div>
+
+<!-- Grafikai skiltis (paslėpta) -->
+<div id="chartsSection" style="display:none; margin-top:30px; max-width:800px; margin-left:auto; margin-right:auto;">
+    <h2>Žaidėjų taškų kaita</h2>
+    <p><a href="#" onclick="hideCharts(); return false;">← Grįžti į taškų sekimo sistemą</a></p>
+    <p>Pasirinkite žaidėją, kurio taškų istoriją norite pamatyti, arba pasirinkite "Visi" bendrai diagramai.</p>
+    <select id="chartPlayerSelect" onchange="renderChart()"></select>
+    <canvas id="pointsChart" width="700" height="350" style="background-color:#ffffff;border:1px solid #e0e6ee;border-radius:8px;margin-top:10px;"></canvas>
+</div>
+<link rel="stylesheet" href="styles.css">
+<script src="main.js"></script>
+
+
+</body>
+</html>

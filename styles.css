@@ -1,0 +1,340 @@
+<style>
+        body {
+            /* Pritaikome kitą, įdomesnį, bet lengvai skaitomą šriftą */
+            font-family: 'Trebuchet MS', 'Segoe UI', Verdana, sans-serif;
+            background-color: #f0f4f8;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        /* Pagrindinė akcentinė spalva ir jos variacija aktyviems elementams */
+        :root {
+            --accent-color: #007acc;
+            --accent-color-hover: #005fa3;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+        th, td {
+            border: 1px solid #e0e6ee;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f5faff;
+        }
+        button, select {
+            padding: 4px 8px;
+            margin: 2px;
+            font-family: inherit;
+        }
+
+        /* Bendra mygtukų stilistika: apvalūs kampai, akcento spalva */
+        button {
+            border-radius: 4px;
+            border: none;
+            background-color: var(--accent-color);
+            color: #ffffff;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: var(--accent-color-hover);
+        }
+        /* Maži mygtukai (plus/minus) šiek tiek siauresni ir neutralios spalvos */
+        button.small {
+            padding: 2px 6px;
+            font-size: 12px;
+            background-color: #f1f5f9;
+            color: #333;
+            border: 1px solid #d0d7de;
+        }
+        button.small:hover {
+            background-color: #e1ecf4;
+        }
+        /* Select element ištempiamas iki stulpelio pločio */
+        select {
+            width: 100%;
+            border-radius: 4px;
+            border: 1px solid #d0d7de;
+            background-color: #ffffff;
+            padding: 4px 6px;
+        }
+
+        /* Mažesnio pločio select elementai loot boxe ir marketplace */
+        #lootPlayerSelect,
+        #marketPlayerSelect {
+            width: auto;
+            max-width: 200px;
+        }
+
+        /* Mažesnės pločio select elementas loot boxe, kad neužimtų visos eilutės */
+        #lootPlayerSelect {
+            width: auto;
+            max-width: 200px;
+        }
+        .small {
+            font-size: 12px;
+        }
+        .booster-info {
+            font-size: 11px;
+            color: #555;
+        }
+
+        /* Booster tag stilius */
+        .booster-tag {
+            display: inline-flex;
+            align-items: center;
+            background-color: #e0f4ff;
+            border: 1px solid #b5dfff;
+            border-radius: 4px;
+            padding: 2px 4px;
+            margin: 2px;
+            font-size: 11px;
+            white-space: nowrap;
+        }
+
+        /* Pasiekimų (achievement) žymių stilius */
+        .achievement-tag {
+            display: inline-flex;
+            align-items: center;
+            background-color: #fff3cd;
+            border: 1px solid #ffeeba;
+            border-radius: 4px;
+            padding: 2px 4px;
+            margin: 2px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #856404;
+        }
+        .booster-tag button {
+            /* Atstumas nuo teksto */
+            margin-left: 4px;
+            /* Skaidrus fonas ir rėmeliai */
+            background: none;
+            border: none;
+            /* Didesnis šriftas ir užpildas, kad paspaudimas būtų patogesnis */
+            font-weight: bold;
+            font-size: 14px;
+            line-height: 1;
+            padding: 0 4px;
+            cursor: pointer;
+            color: #333;
+        }
+
+        /* Apribojame aktyvių booster'ių celę, kad jos turinys neperdengtų kitų stulpelių */
+        td[id^="boosterList-"] {
+            max-width: 220px;
+            overflow-x: auto;
+            overflow-y: hidden;
+        }
+
+        /* Spalvos retumams loot box lentelėje (Common > Rare > Epic > Legendary) */
+        tr.common      { background: #e6e6e6; }
+	tr.uncommon    { background: #55AB63; }
+	tr.rare        { background: #6177F2; }
+	tr.epic        { background: #BF48E0; }
+	tr.legendary   { background: #FFFC52; }
+
+        /* Slėpti naujo boosterio stulpelį, kai ant <body> yra klasė 'hide-new-booster' */
+        body.hide-new-booster .new-booster-column {
+            display: none;
+        }
+
+        /* Spinner animacija loot boxe */
+        .loot-spinner {
+            width: 60px;
+            height: 60px;
+            margin: 20px auto;
+            border: 6px solid #ccc;
+            border-top: 6px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to   { transform: rotate(360deg); }
+        }
+
+        /* Fanfara aplink gautą boosterį: didesnis šriftas, auksinis rėmelis ir 4 s sukimosi animacija */
+        .fanfare {
+            font-size: 1.6em;
+            font-weight: bold;
+            color: #333;
+            margin-top: 12px;
+            display: inline-block;
+            padding: 8px 16px;
+            border: 4px solid #e0c060;
+            border-radius: 12px;
+            background-color: #fff8e1;
+            animation: fanSpin 4s linear;
+        }
+        @keyframes fanSpin {
+            from { transform: rotate(0deg); }
+            to   { transform: rotate(360deg); }
+        }
+
+        /* Lobių skrynios animacija loot boxe */
+        .loot-chest {
+            width: 120px;
+            height: 100px;
+            position: relative;
+            margin: 20px auto;
+        }
+        .loot-chest .chest-body {
+            width: 100%;
+            height: 60%;
+            background-color: #8b4513;
+            border: 3px solid #654321;
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+            position: absolute;
+            bottom: 0;
+        }
+        .loot-chest .chest-lid {
+            width: 100%;
+            height: 40%;
+            background-color: #a0522d;
+            border: 3px solid #654321;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            position: absolute;
+            top: 0;
+            transform-origin: bottom center;
+            animation: openLid 2s forwards;
+        }
+        @keyframes openLid {
+            0%   { transform: rotate(0deg); }
+            60%  { transform: rotate(-90deg); }
+            100% { transform: rotate(-90deg) translateY(-100%); opacity: 0; }
+        }
+        .loot-chest .gold {
+            width: 12px;
+            height: 12px;
+            background-color: gold;
+            border-radius: 50%;
+            position: absolute;
+            bottom: 35%;
+            left: 50%;
+            transform: translateX(-50%) translateY(0);
+            opacity: 0;
+            animation: coinRise 2s forwards 0.5s;
+        }
+        .loot-chest .gold.gold2 {
+            left: 30%;
+            animation-delay: 0.7s;
+        }
+        .loot-chest .gold.gold3 {
+            left: 70%;
+            animation-delay: 0.9s;
+        }
+        @keyframes coinRise {
+            0%   { transform: translate(-50%, 0) scale(0.6); opacity: 0; }
+            30%  { opacity: 1; }
+            100% { transform: translate(-50%, -60px) scale(1); opacity: 0; }
+        }
+
+        /* Žybčiojančios kibirkštys (geltoni taškai) iš skrynios */
+        .sparks {
+            position: absolute;
+            bottom: 40%;
+            left: 0;
+            right: 0;
+            height: 40%;
+            pointer-events: none;
+        }
+        .spark {
+            width: 6px;
+            height: 6px;
+            background-color: gold;
+            border-radius: 50%;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            opacity: 0;
+            animation: sparkle 3s ease-out infinite;
+        }
+        .spark:nth-child(1) { left: 15%; animation-delay: 0.0s; }
+        .spark:nth-child(2) { left: 30%; animation-delay: 0.5s; }
+        .spark:nth-child(3) { left: 45%; animation-delay: 1.0s; }
+        .spark:nth-child(4) { left: 60%; animation-delay: 1.5s; }
+        .spark:nth-child(5) { left: 75%; animation-delay: 2.0s; }
+        @keyframes sparkle {
+            0%   { transform: translateY(0); opacity: 0; }
+            30%  { opacity: 1; }
+            100% { transform: translateY(-80px); opacity: 0; }
+        }
+
+        /* Prizo etiketės animacija: pasirodo ir pakyla iš skrynios */
+        .prize-label {
+            font-size: 1.6em;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+            margin-top: 10px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: prizeRise 1s forwards;
+            animation-delay: 1s;
+        }
+
+        /* Marketplace rezultato tekstas: didesnis šriftas ir centrinis lygiavimas */
+        #marketResult {
+            font-size: 1.4em;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 20px;
+            color: #333;
+        }
+        @keyframes prizeRise {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Animacija: kai žaidėjas kyla į viršų (pakyla į aukštesnę poziciją).
+           Eilutė švelniai pakyla ir nusileidžia, pereidama per ryškesnę spalvą, kad akcentuotų pokytį. */
+        @keyframes moveUp {
+            0%   { transform: translateY(15px); background-color: #fff7a1; }
+            50%  { transform: translateY(0); background-color: #fff7a1; }
+            100% { transform: translateY(0); background-color: inherit; }
+        }
+        .move-up {
+            animation: moveUp 2.0s ease-in-out;
+        }
+
+        /* Kortelių stilius loot boxui ir marketplace: šviesus fonas, šešėlis, suapvalinti kampai */
+        #lootBoxSection, #marketplaceSection {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        #lootBoxSection h2, #marketplaceSection h2 {
+            margin-top: 0;
+        }
+
+        /* Pakeičiame eilutes, kad būtų švelniai nuspalvotos ir su perėjimu */
+        #scoreboard tbody tr:nth-child(even) td {
+            background-color: #f9fbfe;
+        }
+        #scoreboard tbody tr:hover td {
+            background-color: #eef6ff;
+        }
+
+    </style>
+/* FLIP animacija žaidėjų persirikiavimui */
+tr.smooth-move {
+  transition: transform 0.6s cubic-bezier(.3,1.3,.3,1);
+  z-index: 1;
+  position: relative;
+}
