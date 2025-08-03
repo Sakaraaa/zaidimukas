@@ -33,31 +33,14 @@ const boosterOptions = [
     ,{ value: "bundleX2", label: "Bundle ×2" }
 ];
 
-// GitHub konfigūracija
-const GITHUB_OWNER = '<owner>';
-const GITHUB_REPO = '<repo>';
-const GITHUB_BRANCH = 'main';
-const RAW_PLAYERS_URL = `https://raw.githubusercontent.com/${GITHUB_OWNER}/${GITHUB_REPO}/${GITHUB_BRANCH}/players.json`;
-const API_PLAYERS_URL = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/players.json`;
-const GITHUB_TOKEN = 'PERSONAL_ACCESS_TOKEN';
-
-function updateShareLink() {
-    const link = document.getElementById('shareLink');
-    if (link) {
-        const url = RAW_PLAYERS_URL;
-        link.href = url;
-        link.textContent = url;
-    }
-}
-
-// Inicijuojame arba įkeliam žaidėjus iš GitHub. Pereiname prie naujos struktūros,
-// kur vietoj „activeBooster“ naudojamas masyvas „activeBoosters“.
-async function loadPlayers() {
-    try {
-        const response = await fetch(RAW_PLAYERS_URL);
-        if (!response.ok) throw new Error('HTTP ' + response.status);
-        const parsed = await response.json();
+// Inicijuojame arba įkeliam žaidėjus. Pereiname prie naujos struktūros, kur
+// vietoj „activeBooster“ naudojamas masyvas „activeBoosters“.
+function loadPlayers() {
+    let stored = localStorage.getItem('players');
+    if (stored) {
+        const parsed = JSON.parse(stored);
         parsed.forEach(p => {
+            // Jei senoje struktūroje yra activeBooster, perkeliam į masyvą
             if (!p.hasOwnProperty('activeBoosters')) {
                 p.activeBoosters = [];
                 if (p.activeBooster && p.activeBooster.type && p.activeBooster.type !== 'none') {
@@ -65,12 +48,15 @@ async function loadPlayers() {
                 }
                 delete p.activeBooster;
             }
+            // jei nėra partnerio lauko
             if (!p.hasOwnProperty('partner')) {
                 p.partner = null;
             }
+            // jei nėra achievements objekto
             if (!p.hasOwnProperty('achievements')) {
                 p.achievements = {};
             }
+            // jei nėra boosterUsageCount, lootDrawn ir history
             if (!p.hasOwnProperty('boosterUsageCount')) {
                 p.boosterUsageCount = 0;
             }
@@ -82,11 +68,10 @@ async function loadPlayers() {
             }
         });
         return parsed;
-    } catch (err) {
-        console.error('Nepavyko gauti žaidėjų duomenų iš GitHub', err);
-        alert('Nepavyko gauti žaidėjų duomenų iš GitHub. Naudojami numatytieji žaidėjai.');
+    } else {
+        // Jei localStorage duomenų nėra, pradedame su numatytais vardais
         const defaultNames = ['Tomas', 'Giulija', 'Dovilė', 'Lukas', 'Matas', 'Rytis', 'Viktorija'];
-        return defaultNames.map((nm, idx) => ({
+        const defaultPlayers = defaultNames.map((nm, idx) => ({
             id: idx,
             name: nm,
             points: 0,
@@ -97,55 +82,21 @@ async function loadPlayers() {
             lootDrawn: false,
             pointsHistory: []
         }));
+        return defaultPlayers;
     }
 }
 
-let players = [];
-let previousOrder = [];
+let players = loadPlayers();
+
+// Saugome ankstesnę žaidėjų tvarką pagal ID, kad galėtume nustatyti kilimą į aukštesnę poziciją
+let previousOrder = players.map(p => p.id);
 
 // Valdiklis, ar kitą kartą atnaujinant lentelę reikia rodyti animaciją. Nustatomas, kai keičiasi taškai.
 let enableAnimationOnNextRender = false;
 
-async function savePlayers() {
-    const content = btoa(unescape(encodeURIComponent(JSON.stringify(players, null, 2))));
-    try {
-        // gauti dabartinį failo SHA, kad galėtume jį atnaujinti
-        let sha = undefined;
-        const getRes = await fetch(`${API_PLAYERS_URL}?ref=${GITHUB_BRANCH}`, {
-            headers: { 'Authorization': `Bearer ${GITHUB_TOKEN}` }
-        });
-        if (getRes.ok) {
-            const data = await getRes.json();
-            sha = data.sha;
-        }
-        const res = await fetch(API_PLAYERS_URL, {
-            method: 'PUT',
-            headers: {
-                'Authorization': `Bearer ${GITHUB_TOKEN}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                message: 'Update players data',
-                content,
-                branch: GITHUB_BRANCH,
-                sha
-            })
-        });
-        if (!res.ok) throw new Error(await res.text());
-        updateShareLink();
-    } catch (err) {
-        console.error('Nepavyko įrašyti duomenų į GitHub', err);
-        alert('Nepavyko įrašyti duomenų į GitHub.');
-    }
+function savePlayers() {
+    localStorage.setItem('players', JSON.stringify(players));
 }
-
-// Pradinė iniciacija
-(async function init() {
-    players = await loadPlayers();
-    previousOrder = players.map(p => p.id);
-    renderTable();
-    updateShareLink();
-})();
 
 // Atvaizduojame lentelę
 function renderTable() {
@@ -1366,4 +1317,5 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
 
