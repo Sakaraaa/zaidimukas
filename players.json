@@ -1,0 +1,79 @@
+[
+  {
+    "id": 0,
+    "name": "Tomas",
+    "points": 0,
+    "activeBoosters": [],
+    "partner": null,
+    "achievements": {},
+    "boosterUsageCount": 0,
+    "lootDrawn": false,
+    "pointsHistory": []
+  },
+  {
+    "id": 1,
+    "name": "Giulija",
+    "points": 0,
+    "activeBoosters": [],
+    "partner": null,
+    "achievements": {},
+    "boosterUsageCount": 0,
+    "lootDrawn": false,
+    "pointsHistory": []
+  },
+  {
+    "id": 2,
+    "name": "Dovilė",
+    "points": 0,
+    "activeBoosters": [],
+    "partner": null,
+    "achievements": {},
+    "boosterUsageCount": 0,
+    "lootDrawn": false,
+    "pointsHistory": []
+  },
+  {
+    "id": 3,
+    "name": "Lukas",
+    "points": 0,
+    "activeBoosters": [],
+    "partner": null,
+    "achievements": {},
+    "boosterUsageCount": 0,
+    "lootDrawn": false,
+    "pointsHistory": []
+  },
+  {
+    "id": 4,
+    "name": "Matas",
+    "points": 0,
+    "activeBoosters": [],
+    "partner": null,
+    "achievements": {},
+    "boosterUsageCount": 0,
+    "lootDrawn": false,
+    "pointsHistory": []
+  },
+  {
+    "id": 5,
+    "name": "Rytis",
+    "points": 0,
+    "activeBoosters": [],
+    "partner": null,
+    "achievements": {},
+    "boosterUsageCount": 0,
+    "lootDrawn": false,
+    "pointsHistory": []
+  },
+  {
+    "id": 6,
+    "name": "Viktorija",
+    "points": 0,
+    "activeBoosters": [],
+    "partner": null,
+    "achievements": {},
+    "boosterUsageCount": 0,
+    "lootDrawn": false,
+    "pointsHistory": []
+  }
+]
