@@ -807,9 +807,15 @@ function showLootBox() {
     // Atnaujiname žaidėjų pasirinkimą ir tikimybių lentelę
     populateLootPlayerSelect();
     populateLootProbTable();
-    // Slėpti pagrindinę lentelę ir su tuo susijusius elementus
+    // Slėpti pagrindinę lentelę ir kitus skyrius
     document.getElementById('scoreboard').style.display = 'none';
     document.getElementById('resetButton').style.display = 'none';
+    const mDiv = document.getElementById('marketplaceSection');
+    if (mDiv) mDiv.style.display = 'none';
+    const leaderDiv = document.getElementById('leaderboardSection');
+    if (leaderDiv) leaderDiv.style.display = 'none';
+    const chartDiv = document.getElementById('chartsSection');
+    if (chartDiv) chartDiv.style.display = 'none';
     // Parodyti loot box
     const lootDiv = document.getElementById('lootBoxSection');
     if (lootDiv) lootDiv.style.display = 'block';
@@ -822,13 +828,15 @@ function showLootBox() {
         btn.onclick = drawFromLootBox;
     }
 
-    // Paslėpti nuorodą į Loot box, kad nebesimatytų būnant šioje skiltyje
+    // Paslėpti nuorodas į kitas skiltis, kad nebūtų navigacijos iš loot box
     const lootLink = document.getElementById('lootLink');
     if (lootLink) lootLink.style.display = 'none';
-
-    // Taip pat paslėpti nuorodą į Marketplace
     const marketLink = document.getElementById('marketLink');
     if (marketLink) marketLink.style.display = 'none';
+    const leaderLink = document.getElementById('leaderLink');
+    if (leaderLink) leaderLink.style.display = 'none';
+    const chartLink = document.getElementById('chartLink');
+    if (chartLink) chartLink.style.display = 'none';
 
     // Slėpti naujo boosterio stulpelio jungiklį, nes jis nereikalingas loot boxe
     const tbc = document.getElementById('toggleBoosterContainer');
@@ -847,14 +855,15 @@ function hideLootBox() {
     const lootDiv = document.getElementById('lootBoxSection');
     if (lootDiv) lootDiv.style.display = 'none';
 
-    // Parodyti nuorodą į Loot box, kai grįžtame į pagrindinę lentelę
+    // Parodyti nuorodas, kai grįžtame į pagrindinę lentelę
     const lootLink = document.getElementById('lootLink');
     if (lootLink) lootLink.style.display = '';
-
-    // Parodyti nuorodą į Marketplace, kai grįžtame į pagrindinę lentelę
     const marketLink = document.getElementById('marketLink');
     if (marketLink) marketLink.style.display = '';
-
+    const leaderLink = document.getElementById('leaderLink');
+    if (leaderLink) leaderLink.style.display = '';
+    const chartLink = document.getElementById('chartLink');
+    if (chartLink) chartLink.style.display = '';
     // Parodyti naujo boosterio stulpelio jungiklį vėl
     const tbc = document.getElementById('toggleBoosterContainer');
     if (tbc) tbc.style.display = 'inline-flex';
@@ -948,17 +957,24 @@ function populateMarketPlayerSelect() {
 function showMarketplace() {
     // Atnaujinti žaidėjų pasirinkimą
     populateMarketPlayerSelect();
-    // Slėpti pagrindinę lentelę ir su tuo susijusius elementus
+    // Slėpti pagrindinę lentelę ir kitus skyrius
     document.getElementById('scoreboard').style.display = 'none';
     document.getElementById('resetButton').style.display = 'none';
-    // Slėpti Loot box ir Market nuorodas
+    const lootDiv = document.getElementById('lootBoxSection');
+    if (lootDiv) lootDiv.style.display = 'none';
+    const leaderDiv = document.getElementById('leaderboardSection');
+    if (leaderDiv) leaderDiv.style.display = 'none';
+    const chartDiv = document.getElementById('chartsSection');
+    if (chartDiv) chartDiv.style.display = 'none';
+    // Paslėpti nuorodas į kitas skiltis
     const lootLink = document.getElementById('lootLink');
     if (lootLink) lootLink.style.display = 'none';
     const marketLink = document.getElementById('marketLink');
     if (marketLink) marketLink.style.display = 'none';
-    // Paslėpti loot box skyrių, jei buvo atidarytas
-    const lootDiv = document.getElementById('lootBoxSection');
-    if (lootDiv) lootDiv.style.display = 'none';
+    const leaderLink = document.getElementById('leaderLink');
+    if (leaderLink) leaderLink.style.display = 'none';
+    const chartLink = document.getElementById('chartLink');
+    if (chartLink) chartLink.style.display = 'none';
     // Parodyti Marketplace
     const mDiv = document.getElementById('marketplaceSection');
     if (mDiv) mDiv.style.display = 'block';
@@ -988,11 +1004,15 @@ function hideMarketplace() {
     // Rodyti pagrindinę lentelę ir reset mygtuką
     document.getElementById('scoreboard').style.display = '';
     document.getElementById('resetButton').style.display = '';
-    // Parodyti nuorodas į Loot box ir Marketplace
+    // Parodyti nuorodas
     const lootLink = document.getElementById('lootLink');
     if (lootLink) lootLink.style.display = '';
     const marketLink = document.getElementById('marketLink');
     if (marketLink) marketLink.style.display = '';
+    const leaderLink = document.getElementById('leaderLink');
+    if (leaderLink) leaderLink.style.display = '';
+    const chartLink = document.getElementById('chartLink');
+    if (chartLink) chartLink.style.display = '';
     // Slėpti Marketplace skiltį
     const mDiv = document.getElementById('marketplaceSection');
     if (mDiv) mDiv.style.display = 'none';
@@ -1056,6 +1076,12 @@ function showLeaderboard() {
     // Slėpti lentelę ir kitus skyrius
     document.getElementById('scoreboard').style.display = 'none';
     document.getElementById('resetButton').style.display = 'none';
+    const lootDiv = document.getElementById('lootBoxSection');
+    if (lootDiv) lootDiv.style.display = 'none';
+    const marketDiv = document.getElementById('marketplaceSection');
+    if (marketDiv) marketDiv.style.display = 'none';
+    const chartDiv = document.getElementById('chartsSection');
+    if (chartDiv) chartDiv.style.display = 'none';
     const lootLink = document.getElementById('lootLink');
     if (lootLink) lootLink.style.display = 'none';
     const marketLink = document.getElementById('marketLink');
@@ -1117,6 +1143,9 @@ function showCharts() {
     // slėpti kitus skyrius
     document.getElementById('scoreboard').style.display = 'none';
     document.getElementById('resetButton').style.display = 'none';
+    const lootDiv = document.getElementById('lootBoxSection'); if (lootDiv) lootDiv.style.display = 'none';
+    const marketDiv = document.getElementById('marketplaceSection'); if (marketDiv) marketDiv.style.display = 'none';
+    const leaderDiv = document.getElementById('leaderboardSection'); if (leaderDiv) leaderDiv.style.display = 'none';
     const lootLink = document.getElementById('lootLink'); if (lootLink) lootLink.style.display = 'none';
     const marketLink = document.getElementById('marketLink'); if (marketLink) marketLink.style.display = 'none';
     const leaderLink = document.getElementById('leaderLink'); if (leaderLink) leaderLink.style.display = 'none';
@@ -1319,6 +1348,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
 
 
 
